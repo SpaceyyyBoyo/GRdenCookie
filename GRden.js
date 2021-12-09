@@ -68,7 +68,9 @@ GRden.launch = function() {
 	//RESET SEEDS	
 
 	GRden.reLoad = function() { 
-		var M = Game.Objects['Farm'].minigame; for(var i = 0; i < M.plantsById.length; i++) GRden.lockSeed(M.plantsById[i]);
+		var M = Game.Objects['Farm'].minigame; 
+		for(var i = 0; i < M.plantsById.length; i++) GRden.lockSeed(M.plantsById[i]);
+		M.getUnlockedN();
 	}
 
 	//RESET RANDOMIZATIONS AND SEEDS
