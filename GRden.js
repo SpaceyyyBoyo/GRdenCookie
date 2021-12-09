@@ -1,7 +1,7 @@
 if(GRden === undefined) var GRden= {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/CCSE.js');
 GRden.name = 'GRden';
-GRden.version = '2.0';
+GRden.version = '2.1';
 GRden.GameVersion = '2.031';
 
 GRden.launch = function() {	
@@ -12,7 +12,7 @@ GRden.launch = function() {
 		
 		if (Game.prefs.popups) Game.Popup('GRdenCookie v' + GRden.version + ' loaded!');
 		else Game.Notify('GRdenCookie v' + GRden.version + ' loaded!', '', '', 1, 1);
-    if (Game.prefs.popups) Game.Popup('Garden Randomized!');
+    		if (Game.prefs.popups) Game.Popup('Garden Randomized!');
 		else Game.Notify('Garden Randomized!', '', '', 1, 1);
 	
 	}
@@ -64,8 +64,22 @@ GRden.launch = function() {
 			GRden.pData[3][j] = rSeedIndex;
 		}
 	}
+		
+	//RESET SEEDS	
+
+	GRden.reLoad = function() { 
+		var M = Game.Objects['Farm'].minigame; for(var i = 0; i < M.plantsById.length; i++) GRden.lockSeed(M.plantsById[i]);
+	}
+
+	//RESET RANDOMIZATIONS AND SEEDS
 	
-		GRden.save = function() {
+	GRden.refreshGRden = function() {
+		GRden.RandomizeAge()
+		GRden.cSeeds = [];
+		GRden.reLoad;
+	}
+
+	GRden.save = function() {
 		return JSON.stringify(GRden.pData);
 	}
 
