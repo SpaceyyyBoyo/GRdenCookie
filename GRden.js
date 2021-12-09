@@ -131,7 +131,6 @@ GRden.launch = function() {
 		me.unlocked=0;
 		if (me.l) me.l.classList.add('locked');
 		GRden.cSeeds.splice(GRden.cSeeds.indexOf(me), 1)
-		M.getUnlockedN();
 		return true;
 	}
 	//Lock whole garden with:
