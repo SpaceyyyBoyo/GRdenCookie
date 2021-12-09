@@ -146,7 +146,7 @@ GRden.launch = function() {
 		if(!Game.customMinigame['Farm'].lockSeed) {
 			Game.customMinigame['Farm'].lockSeed = [];
 		}
-		Game.customMinigame['Farm'].unlockSeed.push(GRden.unlockSeed);
+		Game.customMinigame['Farm'].unlockSeed.unshift(GRden.unlockSeed);
 		Game.customMinigame['Farm'].lockSeed.push(GRden.lockSeed);
 		
 		CCSE.MinigameReplacer(function(){
