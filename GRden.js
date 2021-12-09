@@ -1,7 +1,7 @@
 if(GRden === undefined) var GRden= {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/CCSE.js');
 GRden.name = 'GRden';
-GRden.version = '1.4';
+GRden.version = '2.0';
 GRden.GameVersion = '2.031';
 
 GRden.launch = function() {	
@@ -22,7 +22,11 @@ GRden.launch = function() {
 		var mTime = [];
 		var aTick = [];
 		var aRTick = [];
-		GRden.pData = [[],[]];
+		
+		GRden.pData = new Array(5);
+		for (var z = 0; z < GRden.pData.length; z++) {
+  			GRden.pData[z] = new Array(34);
+		}
 	
 		//Get values of mature, ageTick, and ageTickR from all plants and throw them into an array
 		
@@ -41,9 +45,9 @@ GRden.launch = function() {
    			M.plants[p].matureBase = mTime[arrIndex];
 			M.plants[p].ageTick= aTick[arrIndex];
 			M.plants[p].ageTickR = aRTick[arrIndex];
-			GRden.pData[0][p.id] = mTime[arrIndex];
-			GRden.pData[1][p.id] = aTick[arrIndex];
-			GRden.pData[2][p.id] = aRTick[arrIndex];
+			GRden.pData[0][M.plants[p].id] = mTime[arrIndex];
+			GRden.pData[1][M.plants[p].id] = aTick[arrIndex];
+			GRden.pData[2][M.plants[p].id] = aRTick[arrIndex];
 			mTime.splice(arrIndex, 1);
 		}
 	
@@ -61,9 +65,12 @@ GRden.launch = function() {
 		}
 	}
 	
-	GRden.save = function() {
-		console.log(JSON.stringify(GRden.pData));
+		GRden.save = function() {
 		return JSON.stringify(GRden.pData);
+	}
+
+	GRden.exportSave = function() {
+		console.log(JSON.stringify(GRden.pData));
 	}
 
 	GRden.load = function(str) {
@@ -74,9 +81,9 @@ GRden.launch = function() {
 	GRden.checkPData = function() {
 		var M = Game.Objects['Farm'].minigame;
 		for(var p in M.plants) {
-			M.plants[p].matureBase = GRden.pData[0][p.id];
-			M.plants[p].ageTick = GRden.pData[1][p.id];
-			M.plants[p].ageTickR = GRden.pData[2][p.id];
+			M.plants[p].matureBase = GRden.pData[0][M.plants[p].id];
+			M.plants[p].ageTick = GRden.pData[1][M.plants[p].id];
+			M.plants[p].ageTickR = GRden.pData[2][M.plants[p].id];
 		}
 		for(var j = 0; j < 34; j++) {GRden.pSeeds[j] = GRden.pData[3][j];}
 		for(var j = 0; j < GRden.pData[4].length; j++) {GRden.cSeeds[j] = M.plantsById[GRden.pData[4][j]];}
