@@ -1,7 +1,7 @@
 if(GRden === undefined) var GRden= {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/CCSE.js');
 GRden.name = 'GRden';
-GRden.version = '1.2';
+GRden.version = '1.4';
 GRden.GameVersion = '2.031';
 
 GRden.launch = function() {	
@@ -9,7 +9,6 @@ GRden.launch = function() {
 		GRden.isLoaded = 1;
 		GRden.RandomizeAge();
 		GRden.ReplaceGardenLocks();
-		GRden.checkPData();
 		
 		if (Game.prefs.popups) Game.Popup('GRdenCookie v' + GRden.version + ' loaded!');
 		else Game.Notify('GRdenCookie v' + GRden.version + ' loaded!', '', '', 1, 1);
