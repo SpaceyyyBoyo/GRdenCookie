@@ -23,7 +23,7 @@ GRden.launch = function() {
 		var mTime = [];
 		var aTick = [];
 		var aRTick = [];
-		GRden.pData[][];
+		GRden.pData = [][];
 	
 		//Get values of mature, ageTick, and ageTickR from all plants and throw them into an array
 		
