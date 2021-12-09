@@ -1,14 +1,16 @@
 if(GRden === undefined) var GRden= {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/CCSE.js');
 GRden.name = 'GRden';
-GRden.version = '1.0';
+GRden.version = '1.2';
 GRden.GameVersion = '2.031';
+
 GRden.launch = function() {	
 	GRden.init = function() {
 		GRden.isLoaded = 1;
 		GRden.RandomizeAge();
 		GRden.ReplaceGardenLocks();
-
+		GRden.checkPData();
+		
 		if (Game.prefs.popups) Game.Popup('GRdenCookie v' + GRden.version + ' loaded!');
 		else Game.Notify('GRdenCookie v' + GRden.version + ' loaded!', '', '', 1, 1);
     if (Game.prefs.popups) Game.Popup('Garden Randomized!');
@@ -21,6 +23,7 @@ GRden.launch = function() {
 		var mTime = [];
 		var aTick = [];
 		var aRTick = [];
+		GRden.pData[][];
 	
 		//Get values of mature, ageTick, and ageTickR from all plants and throw them into an array
 		
@@ -39,6 +42,9 @@ GRden.launch = function() {
    			M.plants[p].matureBase = mTime[arrIndex];
 			M.plants[p].ageTick= aTick[arrIndex];
 			M.plants[p].ageTickR = aRTick[arrIndex];
+			GRden.pData[0][p.id] = mTime[arrIndex];
+			GRden.pData[1][p.id] = aTick[arrIndex];
+			GRden.pData[2][p.id] = aRTick[arrIndex];
 			mTime.splice(arrIndex, 1);
 		}
 	
@@ -52,9 +58,31 @@ GRden.launch = function() {
         			rSeedIndex = Math.ceil(Math.random()*34 - 1);
     			}
 			GRden.pSeeds[j] = rSeedIndex;
+			GRden.pData[3][j] = rSeedIndex;
 		}
 	}
-  
+	
+	GRden.save = function() {
+		console.log(JSON.stringify(GRden.pData);
+		return JSON.stringify(GRden.pData);
+	}
+
+	GRden.load = function(str) {
+		GRden.pData = JSON.parse(str);
+		GRden.checkPData();
+	}
+	
+	GRden.checkPData = function() {
+		var M = Game.Objects['Farm'].minigame;
+		for(var p in M.plants) {
+			M.plants[p].matureBase = GRden.pData[0][p.id];
+			M.plants[p].ageTick = GRden.pData[1][p.id];
+			M.plants[p].ageTickR = GRden.pData[2][p.id];
+		}
+		for(var j = 0; j < 34; j++) {GRden.pSeeds[j] = GRden.pData[3][j];}
+		for(var j = 0; j < GRden.pData[4].length; j++) {GRden.cSeeds[j] = M.plantsById[GRden.pData[4][j]];}
+	}
+		
 	GRden.unlockSeed = function(me) {
 		var M = Game.Objects['Farm'].minigame;
 		GRden.rArr = GRden.pSeeds[me.id];
@@ -67,6 +95,8 @@ GRden.launch = function() {
 		if(M.plantsById[GRden.rArr].unlocked) return false;
 
 		GRden.cSeeds[GRden.cSeeds.length] = M.plantsById[GRden.rArr];
+		GRden.pData[4][GRden.cSeeds.length] = GRden.rArr;
+		
 		M.plantsById[GRden.rArr].unlocked = 1;
 		if (M.plantsById[GRden.rArr].l) M.plantsById[GRden.rArr].l.classList.remove('locked');
 
