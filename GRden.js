@@ -9,7 +9,7 @@ GRden.launch = function() {
 		GRden.RandomizeAge();
 		GRden.ReplaceGardenLocks();
 
-		if (Game.prefs.popups) Game.Popup('GRdenCookie v' + GRden.version + ' loaded!);
+		if (Game.prefs.popups) Game.Popup('GRdenCookie v' + GRden.version + ' loaded!');
 		else Game.Notify('GRdenCookie v' + GRden.version + ' loaded!', '', '', 1, 1);
     if (Game.prefs.popups) Game.Popup('Garden Randomized!');
 		else Game.Notify('Garden Randomized!', '', '', 1, 1);
