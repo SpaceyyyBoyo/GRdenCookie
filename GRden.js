@@ -1,7 +1,7 @@
 if(GRden === undefined) var GRden= {};
 if(typeof CCSE == 'undefined') Game.LoadMod('https://klattmose.github.io/CookieClicker/CCSE.js');
 GRden.name = 'GRden';
-GRden.version = '2.1';
+GRden.version = '3.0';
 GRden.GameVersion = '2.031';
 
 GRden.launch = function() {	
@@ -22,12 +22,11 @@ GRden.launch = function() {
 		var mTime = [];
 		var aTick = [];
 		var aRTick = [];
-		
 		GRden.pData = new Array(5);
 		for (var z = 0; z < GRden.pData.length; z++) {
   			GRden.pData[z] = new Array(34);
-		}
-	
+		}	
+
 		//Get values of mature, ageTick, and ageTickR from all plants and throw them into an array
 		
 		var i = 0;
@@ -49,6 +48,7 @@ GRden.launch = function() {
 			GRden.pData[1][M.plants[p].id] = aTick[arrIndex];
 			GRden.pData[2][M.plants[p].id] = aRTick[arrIndex];
 			mTime.splice(arrIndex, 1);
+			M.computeMatures();
 		}
 	
 		//Random Seed Drop
@@ -64,23 +64,34 @@ GRden.launch = function() {
 			GRden.pData[3][j] = rSeedIndex;
 		}
 	}
-		
+	
 	//RESET SEEDS	
 
-	GRden.reLoad = function() { 
+	GRden.reload = function() {
 		var M = Game.Objects['Farm'].minigame; 
-		for(var i = 0; i < M.plantsById.length; i++) GRden.lockSeed(M.plantsById[i]);
+		for(var i = 0; i < M.plantsById.length; i++) {
+			GRden.lockSeed(M.plantsById[i]);
+		}
+		GRden.cSeeds = [];
+		for(var p in M.plants) {
+			if(M.plants[p].id == 0) {
+				M.plants[p].unlocked = 1;
+				GRden.cSeeds[GRden.cSeeds.length] = M.plantsById[0];
+				GRden.pData[4][0] = 0;
+				if (M.plantsById[0].l) M.plantsById[0].l.classList.remove('locked');
+			}
+		}
 		M.getUnlockedN();
-	}
+	}	
 
 	//RESET RANDOMIZATIONS AND SEEDS
 	
-	GRden.refreshGRden = function() {
+	GRden.reset = function() {
 		GRden.RandomizeAge()
-		GRden.cSeeds = [];
-		GRden.reLoad;
+		GRden.reload();
 	}
-
+	
+	//SAVE DATA
 	GRden.save = function() {
 		return JSON.stringify(GRden.pData);
 	}
@@ -104,56 +115,44 @@ GRden.launch = function() {
 		for(var j = 0; j < 34; j++) {GRden.pSeeds[j] = GRden.pData[3][j];}
 		for(var j = 0; j < GRden.pData[4].length; j++) {GRden.cSeeds[j] = M.plantsById[GRden.pData[4][j]];}
 	}
-		
-	GRden.unlockSeed = function(me) {
-		var M = Game.Objects['Farm'].minigame;
-		GRden.rArr = GRden.pSeeds[me.id];
-		console.log(me);
 
-		if(!GRden.cSeeds.includes(me)) {
-			me.unlocked = 0;
-			if (me.l) me.l.classList.add('locked');
-		}
-		if(M.plantsById[GRden.rArr].unlocked) return false;
-
-		GRden.cSeeds[GRden.cSeeds.length] = M.plantsById[GRden.rArr];
-		GRden.pData[4][GRden.cSeeds.length] = GRden.rArr;
-		
-		M.plantsById[GRden.rArr].unlocked = 1;
-		if (M.plantsById[GRden.rArr].l) M.plantsById[GRden.rArr].l.classList.remove('locked');
-
-		M.getUnlockedN();
-		//Game.Popup('('+M.plantsById[GRden.rArr].name+')<br>Unlocked '+M.plantsById[GRden.rArr].name+' seed.',Game.mouseX,Game.mouseY + 50); <--- if you want actual seed name to pop up
-		return false;
-	}
-
-	GRden.lockSeed = function(me)
-	{
+	GRden.lockSeed = function(me) {
 		if (me.locked) return false;
 		me.unlocked=0;
 		if (me.l) me.l.classList.add('locked');
 		GRden.cSeeds.splice(GRden.cSeeds.indexOf(me), 1)
 		return true;
 	}
-	//Lock whole garden with:
-	//var M = Game.Objects['Farm'].minigame; for(var i = 0; i < M.plantsById.length; i++) GRden.lockSeed(M.plantsById[i]);
 	
 	GRden.ReplaceGardenLocks = function() {
-	
-		if(!Game.customMinigame['Farm'].unlockSeed) {
-			Game.customMinigame['Farm'].unlockSeed = [];
-		}
-		if(!Game.customMinigame['Farm'].lockSeed) {
-			Game.customMinigame['Farm'].lockSeed = [];
-		}
-		Game.customMinigame['Farm'].unlockSeed.unshift(GRden.unlockSeed);
-		Game.customMinigame['Farm'].lockSeed.push(GRden.lockSeed);
+		var M = Game.Objects['Farm'].minigame;
+		var preEvalScript = "var M = Game.Objects['Farm'].minigame;";
+
+		if(!Game.customMinigame['Farm'].unlockSeed) Game.customMinigame['Farm'].unlockSeed = [];
+		CCSE.ReplaceCodeIntoFunction('M.unlockSeed', 'if (me.unlocked) return false;',`
+			var M = Game.Objects['Farm'].minigame;
+			GRden.rArr = GRden.pSeeds[me.id];
+			console.log(me);
+
+			if(!GRden.cSeeds.includes(me)) {
+				me.unlocked = 0;
+				if (me.l) me.l.classList.add('locked');
+			}
+			if(M.plantsById[GRden.rArr].unlocked) return false;
+
+			GRden.cSeeds[GRden.cSeeds.length] = M.plantsById[GRden.rArr];
+			GRden.pData[4][GRden.cSeeds.length] = GRden.rArr;
 		
-		CCSE.MinigameReplacer(function(){
-			var M = Game.Objects['Farm'].minigame;	
-			M.toRebuild = true;
-			M.buildPanel();
-		}, 'Farm');
+			M.plantsById[GRden.rArr].unlocked = 1;
+			if (M.plantsById[GRden.rArr].l) M.plantsById[GRden.rArr].l.classList.remove('locked');
+
+			M.getUnlockedN();
+			Game.Popup('('+M.plantsById[GRden.rArr].name+')<br>Unlocked '+M.plantsById[GRden.rArr].name+' seed.',Game.mouseX,Game.mouseY);
+			return false;`,
+			-1, preEvalScript);
+		M.toRebuild = true;
+		M.buildPanel();
+			
 	}
 	Game.registerMod(GRden.name, GRden);
 	
