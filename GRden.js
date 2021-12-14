@@ -12,7 +12,6 @@ GRden.launch = function() {
 		
 		if (Game.prefs.popups) Game.Popup('GRdenCookie v' + GRden.version + ' loaded!');
 		else Game.Notify('GRden Cookie!','GRdenCookie v' + GRden.version + ' loaded!', [2, 27] , 1, 1);
-		
     		if (Game.prefs.popups) Game.Popup('Garden Randomized!');
 		else Game.Notify('Garden Randomized!', '', '', 1, 1);
 	
@@ -139,7 +138,10 @@ GRden.launch = function() {
 				me.unlocked = 0;
 				if (me.l) me.l.classList.add('locked');
 			}
-			if(M.plantsById[GRden.rArr].unlocked) return false;
+			if(M.plantsById[GRden.rArr].unlocked) {
+				console.log(M.plantsById[GRden.rArr]);
+				return false;
+			}
 
 			GRden.cSeeds[GRden.cSeeds.length] = M.plantsById[GRden.rArr];
 			GRden.pData[4][GRden.cSeeds.length] = GRden.rArr;
@@ -151,6 +153,23 @@ GRden.launch = function() {
 			Game.Popup('('+M.plantsById[GRden.rArr].name+')<br>Unlocked '+M.plantsById[GRden.rArr].name+' seed.',Game.mouseX,Game.mouseY);
 			return false;`,
 			-1, preEvalScript);
+		CCSE.ReplaceCodeIntoFunction('M.getPlantDesc', "var children='';", `
+			var seedDrop='';
+			seedDrop+='<div class="shadowFilter" style="display:inline-block;">';
+			var sIt=M.plantsById[GRden.pSeeds[me.id]];
+			if (me.unlocked && sIt.unlocked) {
+				seedDrop+='<div class="gardenSeedTiny" style="background-position:'+(-0*48)+'px '+(-sIt.icon*48)+'px;"></div>';
+			}
+			else {
+				seedDrop+='<div class="gardenSeedTiny" style="background-image:url(img/icons.png?v='+Game.version+');background-position:'+(-0*48)+'px '+(-7*48)+'px;opacity:0.35;"></div>';
+			}
+			seedDrop+='</div>';
+			var children='';`,
+			0, preEvalScript);
+		CCSE.ReplaceCodeIntoFunction('M.getPlantDesc', `'<div class="line"></div>'+`,`
+			('<div style="margin:6px 0px;font-size:11px;"><b>Seed Drop :</b> '+seedDrop+'</div>')+
+			'<div class="line"></div>'+`,
+			0, preEvalScript);
 		M.toRebuild = true;
 		M.buildPanel();
 			
